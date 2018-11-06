@@ -1,0 +1,45 @@
+PASOS PARA EL PROYECTO
+
+1) Creación de una tabla en la base de datos HDFS con los siguientes campos 'name', 'client','project','extension','creation_date','size','link'
+
+2) Ejecutar codigo de python que lee los datos de un directorio en windows para crear los inserts de las tablas (ARCHIVO DE INSERTS - Inserts.txt);
+
+----CODIGO PYTHON----
+import os
+import csv
+import time
+
+path ="E:\Clientes"
+
+for dirName, subdirList, fileList in os.walk(path):
+	for fname in fileList:
+		(mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime) = os.stat(dirName+"\\"+fname)
+		time.ctime(ctime)
+		text_file = open("E:\Inserts.txt", "a")
+		fname2 = fname[:fname.index(".")]
+		dirName2 = dirName[2:].replace('\\', '/')
+		text_file.write("insert into almacen_datos.documentos values ('"+fname2.replace(' ', '_')+"','"+div[2]+"','"+div[3]+"','"+fname[fname.index(".")+1:]+"','"+str(time.ctime(ctime))+"','"+str(size)+"','"+dirName2.replace(' ', '_')+"'); \n")
+		
+3) Se realizo el paso de los documentos por medio de WinSCP al almacenamiento de uno de los host (linux suse) del cluster
+
+4) Se construyen los directorios HDFS para realizar la ingesta de los archivos (ARCHIVO DE COMANDOS - Dir_HDFS.txt)
+
+for dirName, subdirList, fileList in os.walk(path):
+	for fname in fileList:		
+		if (dirName_last != dirName):
+            text_file = open("E:\Dir_HDFS.txt", "a")
+            text_file.write("hdfs dfs -mkdir '"+dirName[2:].replace('\\', '/')+"'\n")
+			text_file.close()
+        dirName_last = dirName;
+
+5) Se ejecuta la ingesta de los archivos del sistema de archivos de linux al HDFS (ARCHIVO DE COMANDOS - Put_HDFS.txt)
+
+for dirName, subdirList, fileList in os.walk(path):
+	for fname in fileList:		
+		if (dirName_last != dirName):
+            text_file = open("E:\Put_HDFS.txt", "a")
+            text_file.write("hdfs dfs -put /tmp"+dirName2.replace(' ', '_')+"/* "+dirName2.replace(' ', '_')+"\n")
+			text_file.close()
+        dirName_last = dirName;
+
+6) Con la herramienta powerBI se realiza la consulta al HDFS para obtener la tablas y el link de acceso a los datos.		
