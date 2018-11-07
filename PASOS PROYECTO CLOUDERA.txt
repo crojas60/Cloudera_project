@@ -1,6 +1,6 @@
 PASOS PARA EL PROYECTO
 
-1) Creación de una tabla en la base de datos HDFS con los siguientes campos 'name', 'client','project','extension','creation_date','size','link'
+1) Creación de una tabla en la base de datos IMPALA con los siguientes campos 'name', 'client','project','extension','creation_date','size','link'
 
 2) Ejecutar codigo de python que lee los datos de un directorio en windows para crear los inserts de las tablas (ARCHIVO DE INSERTS - Inserts.txt);
 
@@ -41,5 +41,5 @@ for dirName, subdirList, fileList in os.walk(path):
             text_file.write("hdfs dfs -put /tmp"+dirName2.replace(' ', '_')+"/* "+dirName2.replace(' ', '_')+"\n")
 			text_file.close()
         dirName_last = dirName;
-
-6) Con la herramienta powerBI se realiza la consulta al HDFS para obtener la tablas y el link de acceso a los datos.		
+7) por medio del complemento whdfs se exponen a manera de url los archivos contenidos en el hdfs utilizando el puerto 14000 y el super usuario hdfs en la propia url.
+6) Con la herramienta powerBI se realiza la consulta al impala para obtener la tablas y el link del whdfs de acceso a los datos.		
